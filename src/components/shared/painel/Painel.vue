@@ -11,7 +11,12 @@
 
 <script>
 export default {
-  props: ["titulo"],
+  props: {
+    titulo: {
+      type: String,
+      required: true
+    }
+  },
 
   data() {
     return {
@@ -37,6 +42,7 @@ export default {
   text-align: center;
 }
 .painel .painel-titulo {
+  cursor: pointer;
   text-align: center;
   border: solid 2px;
   background: lightblue;

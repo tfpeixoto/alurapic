@@ -4,7 +4,16 @@
 
 <script>
 export default {
-  props: ["url", "titulo"]
+  props: {
+    titulo: {
+      type: String,
+      required: true
+    },
+    url: {
+      type: String,
+      required: true
+    }
+  }
 };
 </script>
 
