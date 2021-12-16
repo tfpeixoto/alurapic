@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1 class="centralizado">{{ titulo }}</h1>
+    <p class="centralizado" v-show="mensagem">{{ mensagem }}</p>
 
     <input
       type="search"
@@ -18,7 +19,11 @@
         :key="foto.index"
       >
         <meu-painel :titulo="foto.titulo">
-          <imagem-responsiva :titulo="foto.titulo" :url="foto.url" />
+          <imagem-responsiva
+            v-meu-transform:scale.animate.reverse="1.2"
+            :titulo="foto.titulo"
+            :url="foto.url"
+          />
           <meu-botao
             tipo="button"
             rotulo="remover"
@@ -36,6 +41,7 @@
 import Painel from "../shared/painel/Painel.vue";
 import ImagemResponsiva from "../shared/imagem-responsiva/ImagemResponsiva.vue";
 import Botao from "../shared/botao/Botao.vue";
+import FotoService from "../../domain/foto/FotoService.js";
 
 export default {
   components: {
@@ -57,7 +63,18 @@ export default {
 
   methods: {
     remove(foto) {
-      alert("removi a foto " + foto.titulo);
+      this.service.apaga(foto._id)
+      .then(
+        () => {
+          let indice = this.fotos.indexOf(foto);
+          this.fotos.splice(indice, 1);
+          this.mensagem = "Foto removida com sucesso";
+        },
+        err => {
+          console.log(err);
+          this.mensagem = "Não foi possível remover a foto";
+        }
+      );
     }
   },
 
@@ -65,15 +82,16 @@ export default {
     return {
       titulo: "Alurapic",
       fotos: [],
-      filtro: ""
+      filtro: "",
+      mensagem: ""
     };
   },
 
   created() {
-    this.$http
-      .get("http://localhost:3000/v1/fotos")
-      .then(res => res.json())
-      .then(fotos => (this.fotos = fotos));
+    this.service = new FotoService(this.$resource);
+    this.service
+      .lista()
+      .then(fotos => this.fotos = fotos, err => console.log(err));
   }
 };
 </script>
